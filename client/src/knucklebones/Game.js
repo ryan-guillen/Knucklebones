@@ -156,7 +156,7 @@ function Game() {
   }, [])
 
   return ( 
-    <div className="Game">
+    <div className="Game flex flex-col">
       <Lobby 
         createRoom={createRoom}
         joinRoom={joinRoom}

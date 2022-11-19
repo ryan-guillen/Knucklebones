@@ -4,7 +4,7 @@ import ScoreArea from './ScoreArea.js'
 
 export default function Player(props) {
   return (
-    <div id="Player" className="Side flex h-1/2 justify-center border-black border">
+    <div id="Player" className="flex-1 flex h-1/2 justify-center border-black border">
       <DiceArea 
         rollDice = {props.rollDice} 
         diceRoll = {props.diceRoll}

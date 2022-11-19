@@ -10,7 +10,7 @@ export default function Board(props) {
   }
 
   return (
-    <div className="Board grid grid-rows-3 grid-cols-3 w-56 h-52 my-auto gap-x-2">
+    <div className="Board grid grid-rows-3 grid-cols-3 w-56 my-auto gap-x-2">
       {renderSquare(0)}
       {renderSquare(1)}
       {renderSquare(2)}

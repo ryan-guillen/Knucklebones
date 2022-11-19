@@ -6,7 +6,7 @@ export default function Square(props) {
     image = null;
 
   return (
-    <div className="Square border-yellow-400 border min-w-full min-h-full hover:bg-slate-400" onClick={props.onClick}>
+    <div className="aspect-square border-yellow-400 border hover:bg-slate-400" onClick={props.onClick}>
       {image}
     </div>
   )

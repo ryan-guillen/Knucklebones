@@ -6,8 +6,8 @@ export default function DiceArea(props) {
     else
       image = null;
     return (
-      <div className="DiceArea my-auto mr-28 text-center">
-        <div className="DiceSpot bg-yellow-400 w-24 h-24 rounded-lg border mb-1">{image}</div>
+      <div className="my-auto mr-28 text-center">
+        <div className="bg-yellow-400 w-24 h-24 rounded-lg border mb-1">{image}</div>
         {placeButton}
       </div>
     )
