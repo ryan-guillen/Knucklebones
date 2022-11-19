@@ -32,13 +32,13 @@ const io = new require('socket.io')(server, {
 io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`)
 
-    socket.on('create_room', (data) => { // player creates room with number
+    socket.on('create_room', (data) => { // Player creates room with number
         socket.join(data);
         pendingRooms[data] = [socket.id];
         console.log(pendingRooms);
     });
 
-    socket.on('join_room', (data) => { // player join rooms with number
+    socket.on('join_room', (data) => { // Player join rooms with number
         console.log("received");
         if (data in pendingRooms) { // number must be a created room already
             socket.join(data);
@@ -62,7 +62,7 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('roll_dice', (data) => { // a player rolled the dice
+    socket.on('roll_dice', (data) => { // A player rolled the dice
         //console.log('roll');
         if (socket.id == games[data].p1) { // p1 rolled
             games[data].p1DiceRoll = Math.floor(Math.random() * 6) + 1;
@@ -80,38 +80,34 @@ io.on('connection', (socket) => {
         if (socket.id == games[room].p1 && games[room].turn == 1) {
             let newBoard = games[room].p1Board;
             i = nextOpenSpace(newBoard, i);
-            if (i != -1) { // if column has space
-                //console.log(i);
+            if (i != -1) { // If column has space, place the dice
                 let roll = games[room].p1DiceRoll;
                 newBoard[i] = roll;
                 let newBoards = adjustBoard(newBoard, games[room].p2Board, games[room].turn, i, roll)
-                updateBoards(room, newBoards) // if someone has won
+                updateBoards(room, newBoards)
                 games[room].turn = 2;
             }
         }
         else if (socket.id == games[room].p2 && games[room].turn == 2) {
             let newBoard = games[room].p2Board;
             i = nextOpenSpace(newBoard, i);
-            if (i != -1) { // if column has space
-                //console.log(i);
+            if (i != -1) {
                 let roll = games[room].p2DiceRoll;
                 newBoard[i] = roll;
                 let newBoards = adjustBoard(games[room].p1Board, newBoard, games[room].turn, i, roll)
-                updateBoards(room, newBoards) // if someone has won
+                updateBoards(room, newBoards)
                 games[room].turn = 1;
             }
         }
         io.to(room).emit('square_clicked', games[room]);
 
         if(checkWinner(games[room].p1Board, games[room].p2Board)) {
-            console.log(games[room].p1Score);
-            console.log(games[room].p2Score);
-            if (games[room].p1Score > games[room].p2Score)
+            console.log('p1: ' + games[room].p1Score + '\np2: ' + games[room].p2Score);
+            if (games[room].p1Score > games[room].p2Score) // p1 wins
                 games[room].winner = 1;
-            else if (games[room].p1Score < games[room].p2Score)
-            games[room].winner = 2;
-            else games[room].winner = 3;
-            console.log('win');
+            else if (games[room].p1Score < games[room].p2Score) // p2 wins
+                games[room].winner = 2;
+            else games[room].winner = 3; // tie
             io.to(room).emit('game_finished', games[room]);
         }
     })
@@ -130,7 +126,4 @@ let updateBoards = (room, newBoards) => {
     games[room].p2Score = scores[1];
     games[room].p1DiceRoll = null;
     games[room].p2DiceRoll = null;
-
-    if (checkWinner(newBoards[0], newBoards[1])) return true;
-    else return false;
 }

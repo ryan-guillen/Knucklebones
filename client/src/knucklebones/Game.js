@@ -5,7 +5,6 @@ import Lobby from './Lobby.js'
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
-
 const socket = io(process.env.REACT_APP_SERVER_IP, {
   withCredentials: true,
   extraHeaders: {
@@ -55,7 +54,7 @@ let reverseBoard = (board) => {
       pos -= 3;
     }
   }
-  // reverse the array, but only by columns
+  // Reverse the array, but only by columns
   // ex: 0, 3, 6 -> 6, 3, 0, and 2, 5, 8 -> 8, 5, 2
   // otherwise the opposing player's dice rolls get pushed to the bottom
   // of the array, rather than stacked on top
@@ -68,7 +67,7 @@ let reverseBoard = (board) => {
       }
     }
   }
-  // pushes everything to the end of the array so it mirrors
+  // Pushes everything to the end of the array so it mirrors
   // the player's viewpoint
   
   return newBoard;
@@ -82,9 +81,10 @@ function Game() {
   const [p2Board, setP2Board] = useState(Array(9).fill(null));
 
   const rollDice = () => {
-    if (isMyTurn() && gameState.p1DiceRoll == null) // can only roll if your roll is null
+    if (isMyTurn() && gameState.p1DiceRoll == null)
       socket.emit('roll_dice', room)
   }
+
   const clickSquare = (i) => {
     if (isMyTurn() && gameState.p1DiceRoll != null) {
       socket.emit('click_square', { room, i });
@@ -103,6 +103,7 @@ function Game() {
         setStatus("Waiting for opponent to join room...");
     }
   }
+  
   const joinRoom = () => {
     if (room != '') {
         socket.emit('join_room', room);
@@ -116,17 +117,16 @@ function Game() {
       setP2Board(Array(9).fill(null));
       if (socket.id == data.p2) {
         setGameState(reverseData(data));
-      }
+      } // If you are the 2nd player, reverse the data
       else {
         setGameState(data);
       }
-      //console.log('in game ready');
     });
 
     socket.on('dice_rolled', (data) => {
       if (socket.id == data.p2) {
         setGameState(reverseData(data));
-      }
+      } // If you are the 2nd player, reverse the data
       else {
         setGameState(data);
       }
@@ -135,11 +135,11 @@ function Game() {
     socket.on('square_clicked', (data) => {
       if (socket.id == data.p2) {
         setGameState(reverseData(data));
-        setP2Board(reverseBoard(data.p1Board)); // opponent's board will mirror the players
+        setP2Board(reverseBoard(data.p1Board)); // Opponent's board will mirror the players
       }
       else {
         setGameState(data);
-        setP2Board(reverseBoard(data.p2Board)); // opponent's board will mirror the players
+        setP2Board(reverseBoard(data.p2Board)); // Opponent's board will mirror the players
       }
       //console.log(gameState);
     })
@@ -155,21 +155,20 @@ function Game() {
     })
   }, [])
 
-  return (
-    
+  return ( 
     <div className="Game">
-      {<Lobby 
+      <Lobby 
         createRoom={createRoom}
         joinRoom={joinRoom}
         setRoom={setRoom}
         status={status}
         active={active}
-      />}
+      />
       <Opponent 
         rollDice={() => rollDice()}
         diceRoll={gameState.p2DiceRoll}
         board={p2Board}
-        //clickSquare={(i) => clickSquare(i)}
+        clickSquare={() => { return false }} // do nothing
         score={gameState.p2Score}
       />
       <Player 
