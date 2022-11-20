@@ -79,23 +79,27 @@ function Game() {
   const [status, setStatus] = useState('');
   const [gameState, setGameState] = useState(baseGame);
   const [p2Board, setP2Board] = useState(Array(9).fill(null));
+  const [isMyTurn, setIsMyTurn] = useState(false);
 
   const rollDice = () => {
-    if (isMyTurn() && gameState.p1DiceRoll == null)
+    if (isMyTurn && gameState.p1DiceRoll == null)
       socket.emit('roll_dice', room)
   }
 
   const clickSquare = (i) => {
-    if (isMyTurn() && gameState.p1DiceRoll != null) {
+    if (isMyTurn && gameState.p1DiceRoll != null) {
       socket.emit('click_square', { room, i });
+      //setIsMyTurn(!isMyTurn);
     }
   }
 
+  /*
   const isMyTurn = () => {
     if (socket.id == gameState.p1 && gameState.turn == 1) return true;
     if (socket.id == gameState.p2 && gameState.turn == 2) return true;
     return false;
   }
+  */
 
   const createRoom = () => {
     if (room != '') {
@@ -117,9 +121,11 @@ function Game() {
       setP2Board(Array(9).fill(null));
       if (socket.id == data.p2) {
         setGameState(reverseData(data));
+        setIsMyTurn(true); // This gets reversed
       } // If you are the 2nd player, reverse the data
       else {
         setGameState(data);
+        setIsMyTurn(false); // This gets reversed
       }
     });
 
@@ -130,6 +136,7 @@ function Game() {
       else {
         setGameState(data);
       }
+      console.log('dice rolled');
     })
 
     socket.on('square_clicked', (data) => {
@@ -141,7 +148,7 @@ function Game() {
         setGameState(data);
         setP2Board(reverseBoard(data.p2Board)); // Opponent's board will mirror the players
       }
-      //console.log(gameState);
+      console.log('square clicked');
     })
 
     socket.on('game_finished', (data) => {
@@ -153,7 +160,17 @@ function Game() {
       setActive(false);
       setRoom('');
     })
+
+    socket.on('game_interrupted', () => {
+      setActive(false);
+      setStatus("The game was interrupted. A player likely left.");
+      setRoom('');
+    })
   }, [])
+
+  useEffect(() => {
+    setIsMyTurn(!isMyTurn)
+  }, [p2Board])
 
   return ( 
     <div className="Game flex flex-col">
@@ -177,6 +194,7 @@ function Game() {
         board={gameState.p1Board}
         clickSquare={(i) => clickSquare(i)}
         score={gameState.p1Score}
+        isMyTurn={isMyTurn}
       />
     </div>
   );

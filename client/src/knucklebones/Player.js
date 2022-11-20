@@ -6,12 +6,13 @@ export default function Player(props) {
   return (
     <div id="Player" className="flex-1 flex h-1/2 justify-center border-black border">
       <DiceArea 
-        rollDice = {props.rollDice} 
-        diceRoll = {props.diceRoll}
+        rollDice={props.rollDice} 
+        diceRoll={props.diceRoll}
+        isMyTurn={props.isMyTurn}
       />
       <Board 
         board={props.board}
-        clickSquare = {props.clickSquare}
+        clickSquare={props.clickSquare}
       />
       <ScoreArea 
         score={props.score}

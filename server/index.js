@@ -58,7 +58,7 @@ io.on('connection', (socket) => {
                 winner: null,
             }
             io.to(data).emit('game_ready', games[data]);
-            console.log(games);
+            //console.log(games);
         }
     })
 
@@ -109,6 +109,24 @@ io.on('connection', (socket) => {
                 games[room].winner = 2;
             else games[room].winner = 3; // tie
             io.to(room).emit('game_finished', games[room]);
+            // Leave room and delete game data
+            const socket1 = io.sockets.sockets.get(games[room].p1);
+            socket1.leave(room);
+            const socket2 = io.sockets.sockets.get(games[room].p2);
+            socket2.leave(room);
+            delete games[room];
+            delete pendingRooms[room];
+        }
+    })
+
+    socket.on('disconnect', (reason) => {
+        for (const room in pendingRooms) {
+            if (pendingRooms[room].includes(socket.id)) {
+                console.log('interrupted');
+                io.to(room).emit('game_interrupted');
+                delete games[room];
+                delete pendingRooms[room];
+            }
         }
     })
 
