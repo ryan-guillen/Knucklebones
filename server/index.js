@@ -1,18 +1,19 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-//const http = require('http');
-const https = require('https');
+const http = require('http');
+//const https = require('https');
 const fs = require("fs");
 const cors = require('cors');
 app.use(cors());
 const { adjustBoard, calculateScore, checkWinner, nextOpenSpace } = require('./src/util/knucklebonesUtil.js');
 
 
-const server = https.createServer({
-        key: fs.readFileSync(process.env.PRIV_KEY),
-        cert: fs.readFileSync(process.env.CERT),
-    },
+const server = http.createServer(
+    //{
+    //    key: fs.readFileSync(process.env.PRIV_KEY),
+    //    cert: fs.readFileSync(process.env.CERT),
+    //},
     app
 );
 const pendingRooms = {};
